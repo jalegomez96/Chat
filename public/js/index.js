@@ -4,7 +4,7 @@ const btn_disconnect = document.getElementById('btn_disconnect');
 const txt_message = document.getElementById('message');
 const btn_send = document.getElementById('btn_send');
 const history = document.getElementById('history');
-const socket = io('http://localhost:3000/', { autoConnect: false });
+const socket = io('http://186.99.185.68:3000/', { autoConnect: false });
 
 socket.on('response', (data) => {
   add_history(data);
