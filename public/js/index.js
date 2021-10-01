@@ -4,10 +4,14 @@ const btn_disconnect = document.getElementById('btn_disconnect');
 const txt_message = document.getElementById('message');
 const btn_send = document.getElementById('btn_send');
 const history = document.getElementById('history');
-const socket = io('http://localhost:5000/', { autoConnect: false });
+const socket = io('http://localhost:3000/', { autoConnect: false });
 
 socket.on('response', (data) => {
   add_history(data);
+});
+
+socket.on('history', (data) => {
+  set_history(data);
 });
 
 function connect() {
@@ -30,6 +34,7 @@ function enable_chat(value) {
   btn_disconnect.disabled = !value;
   txt_message.disabled = !value;
   btn_send.disabled = !value;
+  set_history();
 }
 
 function send() {
@@ -37,17 +42,32 @@ function send() {
   const message = txt_message.value.trim();
   if (!message) return;
   const nickname = txt_nickname.value.trim();
-  add_history({ nickname: 'You', message, timestamp: new Date(), own: true });
+  add_history({ nickname, message, timestamp: new Date(), own: true });
   socket.emit('send', { nickname, message });
   txt_message.value = '';
 }
 
-function add_history({ nickname, message, timestamp, own = false }) {
+function toHistory({ nickname, message, timestamp, own = false }) {
   const own_class = own ? 'chat-log__item--own' : '';
-  history.innerHTML += `<div class="chat-log__item ${own_class}">
-  <h3 class="chat-log__author">${nickname} <small>${new Date(
+  return `<div class="chat-log__item ${own_class}">
+  <h3 class="chat-log__author">${own ? 'You' : nickname} <small>${new Date(
     timestamp
   ).toLocaleString()}</small></h3>
   <div class="chat-log__message">${message}</div>
   </div>`;
+}
+
+function add_history(data) {
+  history.innerHTML += toHistory(data);
+}
+
+function set_history(data = []) {
+  console.log(data);
+  const nickname = txt_nickname.value.trim();
+  history.innerHTML = data
+    .map((d) => {
+      const own = d.nickname === nickname;
+      return toHistory({ ...d, own });
+    })
+    .join('');
 }

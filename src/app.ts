@@ -1,23 +1,49 @@
+import sqlite3 from 'sqlite3';
 import express from 'express';
 import path from 'path';
 import http from 'http';
 import { Server } from 'socket.io';
 
-const PORT = 5000;
-const app = express();
-const httpServer = http.createServer(app);
-const socket = new Server(httpServer);
-
-interface Message {
+interface Chat {
   nickname: string;
   message: string;
   timestamp: Date;
 }
 
-socket.on('connection', (client) => {
-  client.on('send', (data: Omit<Message, 'timestamp'>) => {
-    const message: Message = { ...data, timestamp: new Date() };
-    client.broadcast.emit('response', message);
+const db = new sqlite3.Database('./db/chat.sqlite3');
+// db.serialize(() => {
+//   db.run('CREATE TABLE chat (nickname TEXT, message TEXT, timestamp TEXT)');
+// });
+
+function insertChat(data: Chat) {
+  const stm = `INSERT INTO chat VALUES ('${data.nickname}','${data.message}','${data.timestamp}')`;
+  db.prepare(stm).run();
+}
+
+function getChats() {
+  return new Promise((resolve, reject) => {
+    db.all('SELECT * FROM chat', (err, rows) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(rows);
+    });
+  });
+}
+
+db.prepare('DELETE FROM chat').run();
+
+const PORT = 3000;
+const app = express();
+const httpServer = http.createServer(app);
+const socket = new Server(httpServer);
+
+socket.on('connection', async (client) => {
+  client.emit('history', await getChats());
+  client.on('send', (data: Omit<Chat, 'timestamp'>) => {
+    const chat: Chat = { ...data, timestamp: new Date() };
+    insertChat(chat);
+    client.broadcast.emit('response', chat);
   });
 });
 
