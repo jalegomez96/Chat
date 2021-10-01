@@ -4,14 +4,23 @@ const btn_disconnect = document.getElementById('btn_disconnect');
 const txt_message = document.getElementById('message');
 const btn_send = document.getElementById('btn_send');
 const history = document.getElementById('history');
+const socket = io('http://localhost:5000/', { autoConnect: false });
+
+socket.on('response', (data) => {
+  add_history(data);
+});
 
 function connect() {
   const nickname = txt_nickname.value.trim();
   if (!nickname) return;
+  if (socket.connected) return;
+  socket.connect();
   enable_chat(true);
 }
 
 function disconnect() {
+  if (socket.disconnected) return;
+  socket.disconnect();
   enable_chat(false);
 }
 
@@ -24,9 +33,12 @@ function enable_chat(value) {
 }
 
 function send() {
+  if (socket.disconnected) return;
   const message = txt_message.value.trim();
   if (!message) return;
+  const nickname = txt_nickname.value.trim();
   add_history({ nickname: 'You', message, timestamp: new Date() });
+  socket.emit('send', { nickname, message });
   txt_message.value = '';
 }
 
