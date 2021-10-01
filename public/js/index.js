@@ -37,13 +37,17 @@ function send() {
   const message = txt_message.value.trim();
   if (!message) return;
   const nickname = txt_nickname.value.trim();
-  add_history({ nickname: 'You', message, timestamp: new Date() });
+  add_history({ nickname: 'You', message, timestamp: new Date(), own: true });
   socket.emit('send', { nickname, message });
   txt_message.value = '';
 }
 
-function add_history({ nickname, message, timestamp }) {
-  history.innerHTML += `<p><b>${nickname}:</b> ${message} <sub>${new Date(
+function add_history({ nickname, message, timestamp, own = false }) {
+  const own_class = own ? 'chat-log__item--own' : '';
+  history.innerHTML += `<div class="chat-log__item ${own_class}">
+  <h3 class="chat-log__author">${nickname} <small>${new Date(
     timestamp
-  ).toLocaleString()}</sub></p>`;
+  ).toLocaleString()}</small></h3>
+  <div class="chat-log__message">${message}</div>
+  </div>`;
 }

@@ -23,6 +23,7 @@ socket.on('connection', (client) => {
 
 app.use(express.static(path.resolve(__dirname, '../public')));
 app.use(express.static(path.resolve(__dirname, '../node_modules/socket.io-client/dist')));
+app.use(express.static(path.resolve(__dirname, '../node_modules/bootstrap/dist')));
 
 httpServer.listen(PORT, () => {
   console.log(`Server started on port http://localhost:${PORT}`);

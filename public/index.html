@@ -4,20 +4,76 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/custom.css" />
     <title>Chat</title>
   </head>
   <body>
-    <form onsubmit="return false">
-      <input type="text" name="nickname" id="nickname" placeholder="Nickname" required />
-      <button type="submit" id="btn_connect" onclick="connect()">Connect</button>
-      <button id="btn_disconnect" onclick="disconnect()" disabled>Disconnect</button>
-    </form>
-    <div id="history"></div>
-    <form onsubmit="return false">
-      <input type="text" name="message" id="message" disabled placeholder="Message" />
-      <button type="submit" id="btn_send" onclick="send()" disabled>Send</button>
-    </form>
+    <header class="page-header">
+      <div class="container">
+        <form class="form-horizontal" onsubmit="return false">
+          <div class="row">
+            <div class="col-sm-8 col-xs-6">
+              <input
+                class="form-control"
+                type="text"
+                name="nickname"
+                id="nickname"
+                placeholder="Nickname"
+                required
+              />
+            </div>
+            <div class="col-sm-2 col-xs-3 d-grid gap-2">
+              <button class="btn btn-primary" type="submit" id="btn_connect" onclick="connect()">
+                Connect
+              </button>
+            </div>
+            <div class="col-sm-2 col-xs-3 d-grid gap-2">
+              <button class="btn btn-danger" id="btn_disconnect" onclick="disconnect()" disabled>
+                Disconnect
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </header>
+    <div class="main">
+      <div class="container">
+        <div class="chat-log" id="history"></div>
+      </div>
+      <div class="chat-form">
+        <div class="container">
+          <form class="form-horizontal" onsubmit="return false">
+            <div class="row">
+              <div class="col-sm-10 col-xs-8">
+                <input
+                  type="text"
+                  class="form-control"
+                  name="message"
+                  id="message"
+                  disabled
+                  placeholder="Message"
+                />
+              </div>
+              <div class="col-sm-2 col-xs-4">
+                <button
+                  type="submit"
+                  class="btn btn-success btn-block"
+                  id="btn_send"
+                  onclick="send()"
+                  disabled
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <script src="socket.io.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
     <script src="js/index.js"></script>
   </body>
 </html>
